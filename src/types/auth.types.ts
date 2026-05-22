@@ -16,7 +16,12 @@ export interface AuthServiceMeResponse {
   data: AuthUser;
 }
 
-export type Permission = 'products:write' | 'products:delete';
+export type Permission =
+  | 'products:write'
+  | 'products:delete'
+  | 'categories:write'
+  | 'categories:delete';
+
 export type Role = 'admin' | 'member';
 
 // Extend FastifyRequest to carry the authenticated user

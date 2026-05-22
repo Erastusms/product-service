@@ -1,28 +1,66 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Category ──────────────────────────────────────────────────────────────
+
 model Category {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @db.VarChar(100)
-  slug        String   @unique @db.VarChar(100)
-  description String?  @db.Text
-  parentId    String?  @map("parent_id") @db.Uuid
-  order       Int      @default(0)
-  isActive    Boolean  @default(true) @map("is_active")
-  createdBy   String   @map("created_by") @db.Uuid
-  updatedBy   String?  @map("updated_by") @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(100)
+  slug        String    @unique @db.VarChar(100)
+  description String?   @db.Text
+  parentId    String?   @map("parent_id") @db.Uuid
+  order       Int       @default(0)
+  isActive    Boolean   @default(true) @map("is_active")
+  createdBy   String    @map("created_by") @db.Uuid
+  updatedBy   String?   @map("updated_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  parent   Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children Category[]    @relation("CategoryHierarchy")
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryHierarchy")
 
   products ProductCategory[]
 
   @@map("categories")
 }
 
+// ─── Product ───────────────────────────────────────────────────────────────
+
+model Product {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(255)
+  slug        String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  price       Decimal   @db.Decimal(12, 2)
+  stock       Int       @default(0)
+  sku         String?   @unique @db.VarChar(100)
+  imageUrl    String?   @map("image_url") @db.Text
+  isActive    Boolean   @default(true) @map("is_active")
+  createdBy   String    @map("created_by") @db.Uuid
+  updatedBy   String?   @map("updated_by") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  categories ProductCategory[]
+
+  @@map("products")
+}
+
+// ─── Product ↔ Category (many-to-many) ────────────────────────────────────
+
 model ProductCategory {
-  productId  String   @map("product_id") @db.Uuid
-  categoryId String   @map("category_id") @db.Uuid
+  productId  String @map("product_id") @db.Uuid
+  categoryId String @map("category_id") @db.Uuid
 
   product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)

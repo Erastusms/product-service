@@ -26,7 +26,7 @@ async function prismaPlugin(fastify: FastifyInstance): Promise<void> {
     await instance.prisma.$disconnect();
   });
 
-  fastify.log.info('✅ Prisma connected to database');
+  fastify.log.info('Prisma connected to database');
 }
 
 export default fp(prismaPlugin, { name: 'prisma' });

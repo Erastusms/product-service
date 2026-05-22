@@ -7,6 +7,7 @@ import helmet from '@fastify/helmet';
 import { env } from './config/env.js';
 import prismaPlugin from './plugins/prisma.js';
 import { productRoutes } from './modules/product/product.routes.js';
+import { categoryRoutes } from './modules/category/category.routes.js';
 
 async function buildApp() {
   const app = Fastify({
@@ -32,6 +33,7 @@ async function buildApp() {
 
   // ─── Routes ───────────────────────────────────────────────────────
   await app.register(productRoutes, { prefix: '/v1/products' });
+  await app.register(categoryRoutes, { prefix: '/v1/categories' });
 
   // ─── Health Check ─────────────────────────────────────────────────
   app.get('/health', async () => ({
@@ -57,7 +59,7 @@ async function main() {
 
   try {
     await app.listen({ host: env.HOST, port: env.PORT });
-    app.log.info(`🚀 product-service running on http://${env.HOST}:${env.PORT}`);
+    app.log.info(`product-service running on http://${env.HOST}:${env.PORT}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);
